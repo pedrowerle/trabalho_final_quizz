@@ -1,16 +1,3 @@
-# trabalho_final
+# Trabalho final da disciplina de Conceitos Básicos de Programação em FLUTTER
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Um aplicativo de quiz interativo desenvolvido em Flutter, com integração a uma API para carregar perguntas dinâmicas, gerenciamento de estado, leaderboard utilizando SQLite para salvar nomes e pontuações, e temas claro/escuro. Ideal para aprendizado e demonstração de boas práticas em Flutter. 🚀
