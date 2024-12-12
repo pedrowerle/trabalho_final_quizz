@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:trabalho_final/api_service.dart';
-import 'theme_provider.dart'; // Importa o ThemeProvider
-import 'quizz_screen.dart'; // Importa a tela do Quiz
-import 'package:dio/dio.dart';
-
+import 'theme_provider.dart';
+import 'quizz_screen.dart';
+import 'leaderboard.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => ThemeProvider(), // Inicializa o ThemeProvider
+      create: (context) => ThemeProvider(),
       child: const QuizApp(),
     ),
   );
@@ -20,11 +18,11 @@ class QuizApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context); // Obtém o tema atual
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: 'Quiz Educacional',
-      theme: themeProvider.currentTheme, // Usa o tema gerenciado pelo Provider
-      home: const AppTitle(), // Tela inicial do app
+      theme: themeProvider.currentTheme,
+      home: const AppTitle(),
     );
   }
 }
@@ -52,10 +50,9 @@ class AppTitle extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 20), // Espaço entre o texto e o botão
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Navega para a tela de Quiz
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const QuizScreen()),
@@ -65,11 +62,37 @@ class AppTitle extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: themeProvider.toggleTheme, // Alterna entre os temas
-        child: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode), // Ícone alternado
+      floatingActionButton: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LeaderboardScreen()),
+                  );
+                },
+                child: const Icon(Icons.emoji_events),
+                heroTag: 'trophyButton',
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 0.0),
+              child: FloatingActionButton(
+                onPressed: themeProvider.toggleTheme,
+                child: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+                heroTag: 'themeButton',
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Posiciona no canto inferior direito
     );
   }
 }
