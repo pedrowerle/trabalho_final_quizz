@@ -104,7 +104,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               itemCount: scores.length,
               itemBuilder: (context, index) {
                 final score = scores[index];
-                final imageBytes = score['photo'] as Uint8List?;
+                final imageBytes = score['foto'] as Uint8List?;
 
                 return ListTile(
                   leading: imageBytes != null

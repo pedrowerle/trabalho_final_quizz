@@ -20,7 +20,6 @@ class QuizApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
-      title: 'Quiz Educacional - Inglês',
       theme: themeProvider.currentTheme,
       home: const AppTitle(),
     );

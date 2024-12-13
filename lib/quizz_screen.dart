@@ -117,18 +117,19 @@ class QuizScreenState extends State<QuizScreen> {
                   ),
                 const SizedBox(height: 10),
                 ElevatedButton.icon(
+                  label: const Text("Tirar Foto"),
                   onPressed: () async {
                     await _pickImage();
                     setDialogState(() {}); // Atualiza o diálogo
                   },
                   icon: const Icon(Icons.camera_alt),
-                  label: const Text("Tirar Foto"),
                 ),
               ],
             ),
           ),
           actions: [
             TextButton(
+              child: const Text("Salvar Pontuação"),
               onPressed: () async {
                 final username = usernameController.text.trim();
                 if (username.isNotEmpty) {
@@ -145,8 +146,7 @@ class QuizScreenState extends State<QuizScreen> {
                     const SnackBar(content: Text("Por favor, insira um nome válido.")),
                   );
                 }
-              },
-              child: const Text("Salvar Pontuação"),
+              }
             ),
           ],
         ),

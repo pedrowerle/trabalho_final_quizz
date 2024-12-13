@@ -34,12 +34,12 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
         score INTEGER NOT NULL,
-        photo BLOB
+        foto BLOB
       )
     ''');
   }
 
-  Future<int> insertScoreFoto(String username, int score, Uint8List? photo) async {
+  Future<int> insertScoreFoto(String username, int score, Uint8List? foto) async {
     final db = await database;
 
     return await db.insert(
@@ -47,7 +47,7 @@ class DatabaseHelper {
       {
         'username': username,
         'score': score,
-        'photo': photo,
+        'foto': foto,
       },
     );
   }
@@ -57,7 +57,7 @@ class DatabaseHelper {
 
     return await db.query(
       _tableName,
-      columns: ['id', 'username', 'score', 'photo'],
+      columns: ['id', 'username', 'score', 'foto'],
       orderBy: 'score DESC',
     );
   }
