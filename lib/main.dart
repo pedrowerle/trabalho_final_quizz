@@ -20,7 +20,7 @@ class QuizApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
-      title: 'Quiz Educacional',
+      title: 'Quiz Educacional - Inglês',
       theme: themeProvider.currentTheme,
       home: const AppTitle(),
     );
@@ -37,7 +37,7 @@ class AppTitle extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Educacional'),
+        title: const Text('Quiz Educacional - Inglês'),
         centerTitle: true,
       ),
       body: Column(
@@ -45,7 +45,7 @@ class AppTitle extends StatelessWidget {
         children: [
           const Center(
             child: Text(
-              'Bem-vindo ao Quiz Educacional!',
+              'Bem-vindo ao Quiz Educacional - Inglês!',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
