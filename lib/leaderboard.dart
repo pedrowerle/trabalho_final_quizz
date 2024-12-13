@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'database.dart';
 
 class LeaderboardScreen extends StatefulWidget {
@@ -21,6 +22,28 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     setState(() {
       _scoresFuture = DatabaseHelper.instance.getScores();
     });
+  }
+
+  void _showImageDialog(Uint8List imageBytes) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.memory(imageBytes),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Fechar"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -81,8 +104,22 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               itemCount: scores.length,
               itemBuilder: (context, index) {
                 final score = scores[index];
+                final imageBytes = score['photo'] as Uint8List?;
+
                 return ListTile(
-                  leading: Text('#${index + 1}'),
+                  leading: imageBytes != null
+                      ? GestureDetector(
+                    onTap: () => _showImageDialog(imageBytes),
+                    child: ClipOval(
+                      child: Image.memory(
+                        imageBytes,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                      : const Icon(Icons.person),
                   title: Text(score['username']),
                   trailing: Text('Pontuação: ${score['score']}'),
                 );

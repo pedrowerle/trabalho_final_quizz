@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
 import 'api_service.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'database.dart';
@@ -16,8 +18,8 @@ class QuizScreenState extends State<QuizScreen> {
   int _score = 0;
   int _currentQuestionIndex = 0;
   late Future<List<Task>> _questionsFuture;
+  Uint8List? _capturedImageBytes;
 
-  //Unescape pra formatar as questões
   final HtmlUnescape unescape = HtmlUnescape();
 
   @override
@@ -34,8 +36,6 @@ class QuizScreenState extends State<QuizScreen> {
   }
 
   void _answerQuestion(String resposta, String? respostaCorreta) {
-    print(resposta);
-    print(respostaCorreta);
     if (resposta == respostaCorreta) {
       setState(() {
         _score++;
@@ -51,52 +51,112 @@ class QuizScreenState extends State<QuizScreen> {
     });
   }
 
+  Future<void> _pickImage() async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _capturedImageBytes = bytes;
+        });
+      } else {
+        setState(() {
+          _capturedImageBytes = null;
+        });
+      }
+    } catch (e) {
+      print("Erro ao capturar imagem: $e");
+    }
+  }
+
   void _showQuizEndDialog() {
     final TextEditingController usernameController = TextEditingController();
 
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text("Quiz Finalizado!"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Sua pontuação final: $_score"),
-            const SizedBox(height: 20),
-            TextField(
-              controller: usernameController,
-              decoration: const InputDecoration(
-                labelText: "Digite seu nome",
-                border: OutlineInputBorder(),
-              ),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Quiz Finalizado!"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Sua pontuação final: $_score"),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(
+                    labelText: "Digite seu nome",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (_capturedImageBytes != null)
+                  Column(
+                    children: [
+                      Image.memory(
+                        _capturedImageBytes!,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Foto capturada!",
+                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  )
+                else
+                  const Text(
+                    "Nenhuma foto capturada.",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await _pickImage();
+                    setDialogState(() {}); // Atualiza o diálogo
+                  },
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text("Tirar Foto"),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                final username = usernameController.text.trim();
+                if (username.isNotEmpty) {
+                  await DatabaseHelper.instance.insertScoreFoto(
+                    username,
+                    _score,
+                    _capturedImageBytes,
+                  );
+                  if (mounted) {
+                    Navigator.of(dialogContext).pop();
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Por favor, insira um nome válido.")),
+                  );
+                }
+              },
+              child: const Text("Salvar Pontuação"),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              final username = usernameController.text.trim();
-              if (username.isNotEmpty) {
-                await DatabaseHelper.instance.insertScore(username, _score);
-                if (mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Por favor, insira um nome válido.")),
-                );
-              }
-            },
-            child: const Text("Salvar Pontuação"),
-          ),
-        ],
       ),
     ).then((_) {
-      // Reseta o quiz se sair do dialog
+      // Reseta o quiz ao sair do diálogo
       _resetQuiz();
     });
   }
+
 
   void _resetQuiz() {
     Navigator.pushAndRemoveUntil(
@@ -107,6 +167,7 @@ class QuizScreenState extends State<QuizScreen> {
     setState(() {
       _currentQuestionIndex = 0;
       _score = 0;
+      _capturedImageBytes = null;
     });
   }
 
